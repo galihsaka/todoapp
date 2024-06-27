@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 @Table(name = "m_user")
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "username", unique = true, nullable = false, length = 100)
     private String username;
@@ -13,11 +14,11 @@ public class User {
     public User(){
 
     }
-    public User(int id, String password, String username) {
-        this.id = id;
-        this.password = password;
-        this.username = username;
-    }
+//    public User(int id, String password, String username) {
+//        this.id = id;
+//        this.password = password;
+//        this.username = username;
+//    }
 
     public int getId() {
         return id;

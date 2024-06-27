@@ -1,20 +1,14 @@
 import com.enigma.InputValidation;
+import entity.ToDo;
 import entity.User;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.Query;
-
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        EntityManagerFactory emf= Persistence.createEntityManagerFactory("my-persistence");
-        EntityManager em = emf.createEntityManager();
         InputValidation inputValidation = new InputValidation();
         Scanner scanner = new Scanner(System.in);
-        ToDoService service = new ToDoServiceImpl();
+        ToDoServiceImpl service = new ToDoServiceImpl();
         String chooseMenu, inputDesc, inputTitle, inputDelete, idUpdate, chooseLogin;
         do{
             System.out.println("MAIN MENU");
@@ -27,21 +21,17 @@ public class Main {
                 chooseLogin = scanner.nextLine();
                 if (chooseLogin.equals("1")) {
                     System.out.println("Login");
-                    System.out.print("Masukkan id: ");
-                    int idLogin=scanner.nextInt();
-                    scanner.nextLine();
                     System.out.print("Masukkan username: ");
                     String nameLogin=scanner.nextLine();
                     System.out.print("Masukkan password: ");
                     String pwLogin=scanner.nextLine();
-                    User userFound = em.find(User.class, idLogin);
-                    if(userFound==null){
-                        System.out.println("Id tidak ditemukan!");
+                    List<User> userRegistered = service.checkStatus(nameLogin, pwLogin);
+                    if(userRegistered.size()<=0){
+                        System.out.println("Username atau password salah!");
                     }
                     else {
-                        if(userFound.getUsername().equals(nameLogin)&&userFound.getPassword().equals(pwLogin)){
                             System.out.println("Berhasil Login");
-                            System.out.println("Selamat Datang "+userFound.getUsername()+"!");
+                            System.out.println("Selamat Datang "+userRegistered.get(0).getUsername()+"!");
                             do {
                                 System.out.println("Pilih Menu");
                                 System.out.println("1. Tambah Agenda");
@@ -60,12 +50,31 @@ public class Main {
                                             inputTitle = scanner.nextLine();
                                             System.out.print("Masukkan deskripsi agenda: ");
                                             inputDesc = scanner.nextLine();
-                                            service.insertData(inputDesc, inputTitle, userFound.getId());
+                                            service.insertData(inputDesc, inputTitle, userRegistered.get(0).getId());
                                         } else if (chooseMenu.equals("2")) {
                                             System.out.println("----------------------------------");
                                             System.out.println("MENU 2 LIHAT AGENDA");
                                             System.out.println("----------------------------------");
-                                            service.readData(userFound.getId());
+                                            List<ToDo> todolist=service.readData(userRegistered.get(0).getId());
+                                            if(todolist.size()<=0){
+                                                System.out.println("Data Kosong!");
+                                            }
+                                            else {
+                                                int display = 1;
+                                                for (int i = 0; i < todolist.size(); i++) {
+                                                    System.out.println("AGENDA " + display);
+                                                    System.out.print("ID: ");
+                                                    System.out.println(todolist.get(i).getId());
+                                                    System.out.print("Judul: ");
+                                                    System.out.println(todolist.get(i).getTitle());
+                                                    System.out.print("Deskripsi: ");
+                                                    System.out.println(todolist.get(i).getDescription());
+                                                    System.out.print("Status: ");
+                                                    System.out.println(todolist.get(i).getStatus());
+                                                    display++;
+                                                }
+                                                display = 1;
+                                            }
                                         } else if (chooseMenu.equals("3")) {
                                             System.out.println("----------------------------------");
                                             System.out.println("MENU 3 UPDATE AGENDA");
@@ -77,22 +86,22 @@ public class Main {
                                                     System.out.println("ID Agenda harus berupa angka!");
                                                 }
                                             } while (!inputValidation.isNumeric(idUpdate));
-                                            String storeStatus = service.getStatus(Integer.parseInt(idUpdate));
-                                            if (storeStatus.isBlank()) {
+                                            List<ToDo> storeStatus = service.checkToDo(Integer.parseInt(idUpdate));
+                                            if (storeStatus.size()<=0) {
                                                 System.out.println("Data yang ingin anda update tidak ditemukan!");
                                             } else {
                                                 String stats = "";
-                                                if (storeStatus.equals("on work")) {
+                                                if (storeStatus.get(0).getStatus().equals("on work")) {
                                                     stats = "done";
                                                 } else {
                                                     stats = "on work";
                                                 }
-                                                System.out.println("Status agenda akan diubah dari " + storeStatus + " ke " + stats);
+                                                System.out.println("Status agenda akan diubah dari " + storeStatus.get(0).getStatus() + " ke " + stats);
                                                 System.out.print("Masukkan judul baru: ");
                                                 String updTitle = scanner.nextLine();
                                                 System.out.print("Masukkan deskripsi baru: ");
                                                 String updDesc = scanner.nextLine();
-                                                service.updateData(Integer.parseInt(idUpdate), updDesc, updTitle, stats, userFound.getId());
+                                                service.updateData(Integer.parseInt(idUpdate), updDesc, updTitle, stats, userRegistered.get(0).getId());
                                             }
                                         } else if (chooseMenu.equals("4")) {
                                             System.out.println("----------------------------------");
@@ -105,7 +114,12 @@ public class Main {
                                                     System.out.println("ID Agenda harus berupa angka!");
                                                 }
                                             } while (!inputValidation.isNumeric(inputDelete));
-                                            service.deleteData(Integer.parseInt(inputDelete), userFound.getId());
+                                            List<ToDo> storeStatus = service.checkToDo(Integer.parseInt(inputDelete));
+                                            if (storeStatus.size()<=0) {
+                                                System.out.println("Data yang ingin anda hapus tidak ditemukan!");
+                                            } else {
+                                                service.deleteData(Integer.parseInt(inputDelete), userRegistered.get(0).getId());
+                                            }
                                         } else if (chooseMenu.equals("5")) {
                                             System.out.println("Anda telah log out");
                                         } else {
@@ -120,27 +134,15 @@ public class Main {
                                     }
                                 } while (Integer.parseInt(chooseMenu) <= 0 || Integer.parseInt(chooseMenu) > 5);
                             }while(Integer.parseInt(chooseMenu)>0&&Integer.parseInt(chooseMenu)<5);
-                        }
-                        else System.out.println("Username atau password salah!");
                     }
                 } else if (chooseLogin.equals("2")) {
-                    System.out.println("Register");
-                    System.out.print("Masukkan id: ");
-                    int idUser=scanner.nextInt();
-                    scanner.nextLine();
                     System.out.print("Masukkan username: ");
                     String nameUser=scanner.nextLine();
                     System.out.print("Masukkan password: ");
                     String pwUser=scanner.nextLine();
-                    User user1=new User(idUser, pwUser,nameUser);
-                    em.getTransaction().begin();
-                    em.persist(user1);
-                    em.getTransaction().commit();
-                    System.out.println("Tambah data user berhasil");
+                    service.insertUser(nameUser, pwUser);
                 } else if (chooseLogin.equals("3")) {
-                    Query users = em.createNativeQuery("SELECT * FROM m_user", User.class);
-                    List<User> userList = users.getResultList();
-                    long count=userList.stream().count();
+                    long count=service.countUser();
                     System.out.print("Jumlah Akun Saat Ini: "+count);
                     System.out.println();
                 } else if (chooseLogin.equals("4")) {
