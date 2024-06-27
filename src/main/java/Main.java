@@ -3,7 +3,9 @@ import entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import jakarta.persistence.Query;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -15,10 +17,11 @@ public class Main {
         ToDoService service = new ToDoServiceImpl();
         String chooseMenu, inputDesc, inputTitle, inputDelete, idUpdate, chooseLogin;
         do{
-            System.out.println("Silakan Login");
+            System.out.println("MAIN MENU");
             System.out.println("1. Login");
             System.out.println("2. Register");
-            System.out.println("3. Keluar");
+            System.out.println("3. Lihat Jumlah Akun Yang Terdaftar");
+            System.out.println("4. Keluar");
         do{
             do {
                 chooseLogin = scanner.nextLine();
@@ -40,6 +43,7 @@ public class Main {
                             System.out.println("Berhasil Login");
                             System.out.println("Selamat Datang "+userFound.getUsername()+"!");
                             do {
+                                System.out.println("Pilih Menu");
                                 System.out.println("1. Tambah Agenda");
                                 System.out.println("2. Lihat Semua Agenda");
                                 System.out.println("3. Update Agenda");
@@ -134,16 +138,22 @@ public class Main {
                     em.getTransaction().commit();
                     System.out.println("Tambah data user berhasil");
                 } else if (chooseLogin.equals("3")) {
-                    System.out.println("Anda Keluar Program");
+                    Query users = em.createNativeQuery("SELECT * FROM m_user", User.class);
+                    List<User> userList = users.getResultList();
+                    long count=userList.stream().count();
+                    System.out.print("Jumlah Akun Saat Ini: "+count);
+                    System.out.println();
+                } else if (chooseLogin.equals("4")) {
+                        System.out.println("Anda Keluar Program");
                 } else System.out.println("Menu tidak ada di pilihan");
                 if (!inputValidation.isNumeric(chooseLogin)) {
-                    System.out.println("Inputan terdeteksi karakter, mohon input ulang! (harus berupa angka antara 1-3): ");
+                    System.out.println("Inputan terdeteksi karakter, mohon input ulang! (harus berupa angka antara 1-4): ");
                 }
             }while(!inputValidation.isNumeric(chooseLogin));
-            if (Integer.parseInt(chooseLogin) <= 0 || Integer.parseInt(chooseLogin) > 3) {
-                System.out.println("Mohon input ulang! (harus berupa angka antara 1-3): ");
+            if (Integer.parseInt(chooseLogin) <= 0 || Integer.parseInt(chooseLogin) > 4) {
+                System.out.println("Mohon input ulang! (harus berupa angka antara 1-4): ");
             }
-            }while (Integer.parseInt(chooseLogin) <= 0 || Integer.parseInt(chooseLogin) > 3);
-        }while (Integer.parseInt(chooseLogin)>0&&Integer.parseInt(chooseLogin)<3);
+            }while (Integer.parseInt(chooseLogin) <= 0 || Integer.parseInt(chooseLogin) > 4);
+        }while (Integer.parseInt(chooseLogin)>0&&Integer.parseInt(chooseLogin)<4);
     }
 }
