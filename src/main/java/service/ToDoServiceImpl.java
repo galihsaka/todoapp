@@ -1,3 +1,5 @@
+package service;
+
 import entity.ToDo;
 import entity.User;
 import jakarta.persistence.*;
@@ -5,7 +7,7 @@ import util.JPAUtil;
 
 import java.util.List;
 
-public class ToDoServiceImpl {
+public class ToDoServiceImpl implements ToDoService {
     EntityManager em = JPAUtil.getEMF();
 
     public List<User> checkStatus(String nameLogin, String pwLogin){
@@ -30,18 +32,6 @@ public class ToDoServiceImpl {
     }
     public ToDo findToDoById(int id){
         return em.find(ToDo.class,id);
-    }
-    public void updateData(Integer id, String desc, String title, String status, int userId){
-        Query todo = em.createNativeQuery("UPDATE to_do SET description=?, title=?, status=? WHERE id=? AND user_id=?", ToDo.class);
-        todo.setParameter(1, desc);
-        todo.setParameter(2, title);
-        todo.setParameter(3, status);
-        todo.setParameter(4, id);
-        todo.setParameter(5, userId);
-        em.getTransaction().begin();
-        todo.executeUpdate();
-        System.out.println("Update Agenda Berhasil!");
-        em.getTransaction().commit();
     }
 
     public void updateToDo(ToDo toDo) {
