@@ -1,14 +1,12 @@
 import entity.ToDo;
 import entity.User;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.Query;
+import jakarta.persistence.*;
+import util.JPAUtil;
+
 import java.util.List;
 
 public class ToDoServiceImpl {
-    EntityManagerFactory emf= Persistence.createEntityManagerFactory("my-persistence");
-    EntityManager em = emf.createEntityManager();
+    EntityManager em = JPAUtil.getEMF();
 
     public List<User> checkStatus(String nameLogin, String pwLogin){
         Query users = em.createNativeQuery("SELECT * FROM m_user WHERE username = ? AND password = ?", User.class);
@@ -30,6 +28,9 @@ public class ToDoServiceImpl {
         List<User> userList = users.getResultList();
         return userList.stream().count();
     }
+    public ToDo findToDoById(int id){
+        return em.find(ToDo.class,id);
+    }
     public void updateData(Integer id, String desc, String title, String status, int userId){
         Query todo = em.createNativeQuery("UPDATE to_do SET description=?, title=?, status=? WHERE id=? AND user_id=?", ToDo.class);
         todo.setParameter(1, desc);
@@ -42,6 +43,14 @@ public class ToDoServiceImpl {
         System.out.println("Update Agenda Berhasil!");
         em.getTransaction().commit();
     }
+
+    public void updateToDo(ToDo toDo) {
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        em.merge(toDo);
+        transaction.commit();
+    }
+
     public void deleteData(Integer id, int userId){
         Query todo = em.createNativeQuery("DELETE FROM to_do WHERE id=? AND user_id=?", ToDo.class);
         todo.setParameter(1, id);
@@ -57,9 +66,10 @@ public class ToDoServiceImpl {
         return todo.getResultList();
     }
 
-    public List<ToDo> checkToDo(int id){
-        Query todo = em.createNativeQuery("SELECT * FROM to_do WHERE id= ?", ToDo.class);
+    public List<ToDo> checkToDo(int id, int userId){
+        Query todo = em.createNativeQuery("SELECT * FROM to_do WHERE id= ? AND user_id= ?", ToDo.class);
         todo.setParameter(1, id);
+        todo.setParameter(2, userId);
         return todo.getResultList();
     }
     public void insertData(String desc, String title, int userId){

@@ -2,9 +2,9 @@
     <persistence-unit name="my-persistence">
         <properties>
             <!-- Database connection settings -->
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/db_todoapp" />
-            <property name="jakarta.persistence.jdbc.user" value="postgres" />
-            <property name="jakarta.persistence.jdbc.password" value="laptoplenovo" />
+<!--            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/db_todoapp" />-->
+<!--            <property name="jakarta.persistence.jdbc.user" value="postgres" />-->
+<!--            <property name="jakarta.persistence.jdbc.password" value="laptoplenovo" />-->
 
             <property name="hibernate.hbm2ddl.auto" value="update"/>
 

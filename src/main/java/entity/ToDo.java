@@ -50,4 +50,15 @@ public class ToDo {
     public void setTitle(String title) {
         this.title = title;
     }
+
+    @Override
+    public String toString() {
+        return "ToDo{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
+                ", user_id=" + user_id +
+                '}';
+    }
 }

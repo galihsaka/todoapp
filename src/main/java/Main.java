@@ -86,10 +86,11 @@ public class Main {
                                                     System.out.println("ID Agenda harus berupa angka!");
                                                 }
                                             } while (!inputValidation.isNumeric(idUpdate));
-                                            List<ToDo> storeStatus = service.checkToDo(Integer.parseInt(idUpdate));
+                                            List<ToDo> storeStatus = service.checkToDo(Integer.parseInt(idUpdate),userRegistered.get(0).getId());
                                             if (storeStatus.size()<=0) {
                                                 System.out.println("Data yang ingin anda update tidak ditemukan!");
                                             } else {
+                                                ToDo todoFound=service.findToDoById(Integer.parseInt(idUpdate));
                                                 String stats = "";
                                                 if (storeStatus.get(0).getStatus().equals("on work")) {
                                                     stats = "done";
@@ -101,7 +102,11 @@ public class Main {
                                                 String updTitle = scanner.nextLine();
                                                 System.out.print("Masukkan deskripsi baru: ");
                                                 String updDesc = scanner.nextLine();
-                                                service.updateData(Integer.parseInt(idUpdate), updDesc, updTitle, stats, userRegistered.get(0).getId());
+                                                todoFound.setDescription(updDesc);
+                                                todoFound.setTitle(updTitle);
+                                                todoFound.setStatus(stats);
+                                                service.updateToDo(todoFound);
+                                                //service.updateData(Integer.parseInt(idUpdate), updDesc, updTitle, stats, userRegistered.get(0).getId());
                                             }
                                         } else if (chooseMenu.equals("4")) {
                                             System.out.println("----------------------------------");
@@ -114,7 +119,7 @@ public class Main {
                                                     System.out.println("ID Agenda harus berupa angka!");
                                                 }
                                             } while (!inputValidation.isNumeric(inputDelete));
-                                            List<ToDo> storeStatus = service.checkToDo(Integer.parseInt(inputDelete));
+                                            List<ToDo> storeStatus = service.checkToDo(Integer.parseInt(inputDelete), userRegistered.get(0).getId());
                                             if (storeStatus.size()<=0) {
                                                 System.out.println("Data yang ingin anda hapus tidak ditemukan!");
                                             } else {
