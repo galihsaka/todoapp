@@ -9,7 +9,7 @@ This project is a Command-Line Interface (CLI) application built with Java. The 
 </ul>
 <h2>Technologies Used</h2>
 <ul>
-  <li><b>Programming Languange</b>: Java</li>
+  <li><b>Programming Languange</b>: Java.</li>
   <li><b>ORM</b>: JPA.</li>
   <li><b>Database</b>: PostgreSQL.</li>
 </ul>
