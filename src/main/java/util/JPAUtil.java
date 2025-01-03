@@ -12,7 +12,7 @@ public class JPAUtil {
         Map<String, String> properties=Map.of(
                 "jakarta.persistence.jdbc.url", "jdbc:postgresql://localhost:5432/db_todoapp",
                 "jakarta.persistence.jdbc.user", "postgres",
-                "jakarta.persistence.jdbc.password", "laptoplenovo"
+                "jakarta.persistence.jdbc.password", ""
         );
         emf= Persistence.createEntityManagerFactory("my-persistence", properties);
         return emf.createEntityManager();
